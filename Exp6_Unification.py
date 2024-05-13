@@ -1,30 +1,28 @@
-def unify(words1, words2):
+def unify(x, y, theta):
+    if theta is None:
+        return None
+    elif x == y:
+        return theta
+    elif isinstance(x, str) and x.islower():
+        return unify_var(x, y, theta)
+    elif isinstance(y, str) and y.islower():
+        return unify_var(y, x, theta)
+    elif isinstance(x, list) and isinstance(y, list):
+        return unify(x[1:], y[1:], unify(x[0], y[0], theta))
+    else:
+        return None
 
-    # Initialize an empty substitution dictionary
-    substitution = {}
+def unify_var(var, x, theta):
+    if var in theta:
+        return unify(theta[var], x, theta)
+    elif x in theta:
+        return unify(var, theta[x], theta)
+    else:
+        theta[var] = x
+        return theta
 
-    # Iterate over the words in both statements
-    for word1, word2 in zip(words1, words2):
-        # If a word in statement 2 is a variable, assign its value based on statement 1
-        if word2.isalpha() and word2[0].isupper():
-            substitution[word2] = word1
-        # If words don't match and neither is a variable, unification is not possible
-        elif word1 != word2:
-            return None
-
-    # Return the substitution dictionary
-    return substitution
-
-# Given statements
-words1 = input("Enter first string: ").split()
-words2 = input("Enter second string: ").split()
-
-
-# Unify statement 2 with statement 1
-result = unify(words1, words2)
-
-# Print the result
-if result:
-    print("The unification is successful. Substitution =", result)
-else:
-    print("Unification failed.")
+theta = {}
+term1 = input("Enter the first term: ").split()
+term2 = input("Enter the second term: ").split()
+result = unify(term1, term2, theta)
+print("Unification result:", result)
